@@ -24,7 +24,6 @@ func NewHandleMessageService(dbCon *postgres.PostgresService, logger *slog.Logge
 }
 
 func (h *HandleMessageService) handleTempMessage(_ mqtt.Client, msg mqtt.Message) {
-	// We extract the count and write that out first to simplify checking for missing values
 	var message TempAndHumid
 	if err := json.Unmarshal(msg.Payload(), &message); err != nil {
 		h.logger.Error(fmt.Sprintf("Message could not be parsed (%s): %s", msg.Payload(), err))

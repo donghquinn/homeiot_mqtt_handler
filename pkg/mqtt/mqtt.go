@@ -60,11 +60,8 @@ func NewMqttService(dbCon *postgres.PostgresService) *MqttService {
 func (m *MqttService) onConnectfunc(c mqtt.Client) {
 	m.logger.Info("connection established")
 
-	// Establish the subscription - doing this here means that it will happen every time a connection is established
-	// (useful if opts.CleanSession is TRUE or the broker does not reliably store session data)
 	t := c.Subscribe(m.mqttCfg.Topic, byte(m.mqttCfg.Qos), m.handler.handleTempMessage)
-	// the connection handler is called in a goroutine so blocking here would hot cause an issue. However as blocking
-	// in other handlers does cause problems its best to just assume we should not block
+
 	go func() {
 		_ = t.Wait() // Can also use '<-t.Done()' in releases > 1.2.0
 		if t.Error() != nil {
