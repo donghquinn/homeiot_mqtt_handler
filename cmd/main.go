@@ -42,6 +42,7 @@ func main() {
 
 	dbCon, err := connectPostgres()
 	if err != nil {
+		slog.Error(fmt.Sprintf("connection postgres err: %v", err))
 		return
 	}
 
