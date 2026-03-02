@@ -50,9 +50,7 @@ func NewMqttService(dbCon *postgres.PostgresService) MqttService {
 	options.OnConnect = mqttService.onConnectfunc
 	options.OnConnectionLost = mqttService.onConnectionLost
 
-	options.OnReconnecting = func(mqtt.Client, *mqtt.ClientOptions) {
-		logger.Info("attempting to reconnect")
-	}
+	options.OnReconnecting = mqttService.onReconnecting
 
 	mqttService.Client = mqtt.NewClient(options)
 
@@ -81,4 +79,8 @@ func (m *MqttService) onConnectionLost(cl mqtt.Client, err error) {
 
 func (m *MqttService) onDefaultPulisherHandler(_ mqtt.Client, msg mqtt.Message) {
 	m.logger.Info(fmt.Sprintf("UNEXPECTED MESSAGE: %s", msg))
+}
+
+func (m *MqttService) onReconnecting(mqtt.Client, *mqtt.ClientOptions) {
+	m.logger.Info("attempting to reconnect")
 }
