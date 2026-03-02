@@ -36,7 +36,6 @@ func main() {
 
 	if err := validateConfigs(); err != nil {
 		slog.Error(fmt.Sprintf("validate configs err: %v", err))
-
 		return
 	}
 
@@ -53,12 +52,7 @@ func main() {
 		return
 	}
 
-	go func() {
-		slog.Debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-		slog.Info("Start Server")
-		slog.Debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-
-	}()
+	slog.Info("Start Server")
 
 	<-quit
 	slog.Info("Received Shut Down Signal")
