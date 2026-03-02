@@ -49,7 +49,7 @@ func main() {
 		return
 	}
 
-	mqttclient := initSubscribe(dbCon)
+	mqttclient := initSubscribe()
 
 	if token := mqttclient.Client.Connect(); token.Wait() && token.Error() != nil {
 		slog.Error(fmt.Sprintf("connect mqtt broker err: %v", token.Error()))
@@ -97,6 +97,11 @@ func connectPostgres() (*postgres.PostgresService, error) {
 	return postgres.NewPostgresConnector()
 }
 
-func initSubscribe(dbCon *postgres.PostgresService) *mqtt.MqttService {
+func initSubscribe() *mqtt.MqttService {
+	dbCon, err := connectPostgres()
+	if err != nil {
+		slog.Error(fmt.Sprintf("connection postgres err: %v", err))
+		return nil
+	}
 	return mqtt.NewMqttService(dbCon)
 }
