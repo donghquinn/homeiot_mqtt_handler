@@ -54,7 +54,7 @@ func main() {
 
 	go func() {
 		slog.Debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-		slog.Debug("Start Server")
+		slog.Info("Start Server")
 		slog.Debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 	}()
