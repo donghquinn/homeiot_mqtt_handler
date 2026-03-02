@@ -18,7 +18,7 @@ type MqttService struct {
 	mqttCfg configs.MqttConfig
 }
 
-func NewMqttService(dbCon *postgres.PostgresService) MqttService {
+func NewMqttService(dbCon *postgres.PostgresService) *MqttService {
 	logger := slog.With("service", "mqtt")
 
 	mqttCfg := configs.MqttCfg
@@ -29,17 +29,17 @@ func NewMqttService(dbCon *postgres.PostgresService) MqttService {
 	options.SetClientID(mqttCfg.ClientId)
 
 	options.SetOrderMatters(mqttCfg.OrderMatters)
-	options.ConnectTimeout = time.Duration(mqttCfg.Timeout)
-	options.WriteTimeout = time.Duration(mqttCfg.WriteTimeout)
+	options.ConnectTimeout = time.Duration(mqttCfg.Timeout) * time.Second
+	options.WriteTimeout = time.Duration(mqttCfg.WriteTimeout) * time.Second
 	options.KeepAlive = mqttCfg.KeepAlive
-	options.PingTimeout = time.Duration(mqttCfg.PingTimeout)
+	options.PingTimeout = time.Duration(mqttCfg.PingTimeout) * time.Second
 
 	options.ConnectRetry = mqttCfg.ConnectRetry
 	options.AutoReconnect = mqttCfg.AutoReconnect
 
 	handler := NewHandleMessageService(dbCon, logger)
 
-	mqttService := MqttService{
+	mqttService := &MqttService{
 		logger:  logger,
 		dbCon:   dbCon,
 		handler: handler,

@@ -23,14 +23,8 @@ func main() {
 		return
 	}
 
-	if err := utils.SetupGlobalLogger("logs", 1000, 1000, configs.AppCfg.Env); err != nil {
-		slog.Error(fmt.Sprintf("Failed to setup logger: %v", err))
-		return
-	}
-
 	if err := readConfigs(); err != nil {
 		slog.Error(fmt.Sprintf("read configs err: %v", err))
-
 		return
 	}
 
@@ -39,9 +33,19 @@ func main() {
 		return
 	}
 
+	if err := utils.SetupGlobalLogger("logs", 1000, 1000, configs.AppCfg.Env); err != nil {
+		slog.Error(fmt.Sprintf("Failed to setup logger: %v", err))
+		return
+	}
+
 	dbCon, err := connectPostgres()
 	if err != nil {
 		slog.Error(fmt.Sprintf("connection postgres err: %v", err))
+		return
+	}
+
+	if err := dbCon.CheckConnection(); err != nil {
+		slog.Error(fmt.Sprintf("ping database connection err: %v", err))
 		return
 	}
 
@@ -93,6 +97,6 @@ func connectPostgres() (*postgres.PostgresService, error) {
 	return postgres.NewPostgresConnector()
 }
 
-func initSubscribe(dbCon *postgres.PostgresService) mqtt.MqttService {
+func initSubscribe(dbCon *postgres.PostgresService) *mqtt.MqttService {
 	return mqtt.NewMqttService(dbCon)
 }
