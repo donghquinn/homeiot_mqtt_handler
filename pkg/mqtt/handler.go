@@ -51,6 +51,7 @@ func (h *HandleMessageService) insertNewTempData(message TempAndHumid) error {
 		return fmt.Errorf("build query string inserting temp and humid data err: %v", err)
 	}
 
+	defer h.dbCon.Client.Close()
 	if _, err := h.dbCon.Client.Exec(query, args...); err != nil {
 		return fmt.Errorf("query inserting temp and humid data err: %v", err)
 	}

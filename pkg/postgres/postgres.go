@@ -52,6 +52,7 @@ func NewPostgresConnector() (*PostgresService, error) {
 }
 
 func (p *PostgresService) CheckConnection() error {
+	defer p.Client.Close()
 	if err := p.Client.Ping(); err != nil {
 		return fmt.Errorf("check database connection err: %v", err)
 	}
