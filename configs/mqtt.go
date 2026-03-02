@@ -25,7 +25,7 @@ type MqttConfig struct {
 
 var MqttCfg MqttConfig
 
-func (m *MqttConfig) ReadConfig() error {
+func ReadMqttConfig() error {
 	if err := envconfig.Process("MQTT", &MqttCfg); err != nil {
 		return fmt.Errorf("read mqtt config err: %v", err)
 	}
