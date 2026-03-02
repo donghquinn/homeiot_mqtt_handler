@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 	"org.donghyuns.com/mqtt/listner/configs"
 	"org.donghyuns.com/mqtt/listner/internal/utils"
+	"org.donghyuns.com/mqtt/listner/pkg/mqtt"
+	"org.donghyuns.com/mqtt/listner/pkg/postgres"
 )
 
 func main() {
@@ -38,6 +40,18 @@ func main() {
 		return
 	}
 
+	dbCon, err := connectPostgres()
+	if err != nil {
+		return
+	}
+
+	mqttclient := initSubscribe(dbCon)
+
+	if token := mqttclient.Client.Connect(); token.Wait() && token.Error() != nil {
+		slog.Error(fmt.Sprintf("connect mqtt broker err: %v", token.Error()))
+		return
+	}
+
 	go func() {
 		slog.Debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		slog.Info("Start Server")
@@ -47,7 +61,8 @@ func main() {
 
 	<-quit
 	slog.Info("Received Shut Down Signal")
-
+	mqttclient.Client.Disconnect(1000)
+	slog.Info("Server Has been Shutdown Gracefully")
 }
 
 func readConfigs() error {
@@ -77,4 +92,12 @@ func validateConfigs() error {
 		return fmt.Errorf("validate postgres configs err: %v", err)
 	}
 	return nil
+}
+
+func connectPostgres() (*postgres.PostgresService, error) {
+	return postgres.NewPostgresConnector()
+}
+
+func initSubscribe(dbCon *postgres.PostgresService) mqtt.MqttService {
+	return mqtt.NewMqttService(dbCon)
 }
