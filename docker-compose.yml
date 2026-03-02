@@ -1,0 +1,24 @@
+services:
+  app:
+    image: ${IMAGE_NAME}:latest
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+        reservations:
+          cpus: "0.25"
+          memory: 100M
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/home/node/logs
+      - ./.env:/home/node/.env
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
