@@ -37,13 +37,10 @@ RUN addgroup -g ${GROUP_ID} -S node && \
 
 WORKDIR /home/node
 
-COPY --from=builder --chown=node:node /app/backend ./backend
+COPY --from=builder --chown=${USER_ID}:${GROUP_ID} /app/backend ./backend
 
-RUN mkdir -p logs tmp node && \
-    chown -R node:node /home/node logs tmp && \
-    chmod 755 /home/node && \
-    chmod 775 logs tmp && \
-    chmod 755 node
+RUN mkdir -p logs && \
+    chown -R ${USER_ID}:${GROUP_ID} /home/node logs
 
 USER node
 
