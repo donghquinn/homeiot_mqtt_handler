@@ -15,9 +15,7 @@ type PostgresService struct {
 	Client *sql.DB
 }
 
-func NewPostgresConnector() (*PostgresService, error) {
-	cfg := configs.PostgresCfg
-
+func NewPostgresConnector(cfg configs.PostgresConfig) (*PostgresService, error) {
 	sslMode := "disable"
 	maxConn := 20
 	maxIdleconn := 10

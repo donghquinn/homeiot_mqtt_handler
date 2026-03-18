@@ -3,27 +3,24 @@ package configs
 import (
 	"fmt"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/kelseyhightower/envconfig"
+	"github.com/caarlos0/env/v8"
 )
 
 type AppConfig struct {
-	Env string `envconfig:"APP_ENV" default:"development"`
+	GlobalConfig
+	LogConfig
+	MqttConfig
+	PostgresConfig
 }
 
-var AppCfg AppConfig
-
-func ReadAppConfig() error {
-	if err := envconfig.Process("APP", &AppCfg); err != nil {
-		return fmt.Errorf("read app config err: %v", err)
-	}
-	return nil
+type GlobalConfig struct {
+	Env string `env:"APP_ENV" envDefault:"development"`
 }
 
-func (a *AppConfig) Validate() error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	if err := validate.Struct(a); err != nil {
-		return fmt.Errorf("validate app config err: %v", err)
+func InitiateConfig() (*AppConfig, error) {
+	cfg := AppConfig{}
+	if err := env.Parse(&cfg); err != nil {
+		return nil, fmt.Errorf("failed to read env : %v", err)
 	}
-	return nil
+	return &cfg, nil
 }
